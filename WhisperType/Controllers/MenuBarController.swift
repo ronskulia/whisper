@@ -9,6 +9,7 @@ import SwiftUI
 class MenuBarController: NSObject {
     private var statusItem: NSStatusItem?
     private var recordingController: RecordingController
+    private var settingsWindow: NSWindow?
 
     init(recordingController: RecordingController) {
         self.recordingController = recordingController
@@ -90,20 +91,19 @@ class MenuBarController: NSObject {
         }
     }
 
-    @objc private func openSettings() {
-        // Open the SwiftUI Settings window
-        if #available(macOS 14.0, *) {
-            NSApp.activate()
-        } else {
-            NSApp.activate(ignoringOtherApps: true)
+    @objc func openSettings() {
+        if settingsWindow == nil {
+            let settingsView = SettingsView()
+            let hostingController = NSHostingController(rootView: settingsView)
+            settingsWindow = NSWindow(contentViewController: hostingController)
+            settingsWindow?.title = "WhisperType Settings"
+            settingsWindow?.styleMask = [.titled, .closable]
+            settingsWindow?.setContentSize(NSSize(width: 550, height: 480))
+            settingsWindow?.center()
         }
 
-        // Use the standard Settings scene
-        if #available(macOS 13.0, *) {
-            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-        } else {
-            NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-        }
+        settingsWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc private func quit() {
