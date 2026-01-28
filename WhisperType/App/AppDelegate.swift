@@ -35,7 +35,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             await recordingController?.loadWhisperModel()
         }
 
+        // Open settings on launch
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.openSettings()
+        }
+
         print("WhisperType started successfully")
+    }
+
+    private func openSettings() {
+        if #available(macOS 14.0, *) {
+            NSApp.activate()
+        } else {
+            NSApp.activate(ignoringOtherApps: true)
+        }
+
+        if #available(macOS 13.0, *) {
+            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        } else {
+            NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
