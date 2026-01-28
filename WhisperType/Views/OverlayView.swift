@@ -57,8 +57,8 @@ struct OverlayView: View {
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak recordingController] _ in
             guard let level = recordingController?.currentAudioLevel else { return }
 
-            // Threshold for silence (adjust sensitivity here)
-            let silenceThreshold: Float = 0.01
+            // Much lower threshold for better sensitivity to quiet speech
+            let silenceThreshold: Float = 0.002
 
             if level < silenceThreshold {
                 // Freeze at low level when silent
@@ -66,11 +66,11 @@ struct OverlayView: View {
                     waveHeights[i] = 0.3
                 }
             } else {
-                // Animate based on audio level when speaking
-                let normalizedLevel = min(CGFloat(level * 10), 1.0) // Scale up the level
+                // Amplify the audio level more for better visibility
+                let normalizedLevel = min(CGFloat(level * 50), 1.0) // Scale up much more
                 for i in 0..<waveHeights.count {
-                    let variation = CGFloat.random(in: -0.2...0.2)
-                    waveHeights[i] = max(0.3, min(1.0, normalizedLevel + variation))
+                    let variation = CGFloat.random(in: -0.15...0.15)
+                    waveHeights[i] = max(0.4, min(1.0, normalizedLevel + variation))
                 }
             }
         }

@@ -24,7 +24,7 @@ struct SettingsView: View {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
         }
-        .frame(width: 550, height: 450)
+        .frame(width: 550, height: 480)
         .onDisappear {
             settings.saveSettings()
         }
@@ -71,76 +71,115 @@ struct SettingsView: View {
                     }
                 }
             }
-            .padding()
+            .padding(20)
         }
     }
 
     var settingsTab: some View {
-        Form {
-            Section(header: Text("General").font(.headline)) {
-                Picker("Whisper Model", selection: $settings.modelName) {
-                    Text("Tiny (39MB, Fastest)").tag("openai_whisper-tiny")
-                    Text("Base (74MB, Balanced)").tag("openai_whisper-base")
-                    Text("Small (244MB, Accurate)").tag("openai_whisper-small")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                // General Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("General")
+                        .font(.headline)
+                        .padding(.bottom, 4)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Whisper Model")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Picker("", selection: $settings.modelName) {
+                            Text("Tiny (39MB, Fastest)").tag("openai_whisper-tiny")
+                            Text("Base (74MB, Balanced)").tag("openai_whisper-base")
+                            Text("Small (244MB, Accurate)").tag("openai_whisper-small")
+                        }
+                        .pickerStyle(.segmented)
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Language")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Picker("", selection: $settings.language) {
+                            Text("English").tag("en")
+                            Text("Ukrainian").tag("uk")
+                            Text("Spanish").tag("es")
+                            Text("French").tag("fr")
+                            Text("German").tag("de")
+                            Text("Italian").tag("it")
+                            Text("Portuguese").tag("pt")
+                            Text("Chinese").tag("zh")
+                            Text("Japanese").tag("ja")
+                            Text("Korean").tag("ko")
+                            Text("Auto-detect").tag("")
+                        }
+                        .pickerStyle(.menu)
+                    }
                 }
 
-                Picker("Language", selection: $settings.language) {
-                    Text("English").tag("en")
-                    Text("Ukrainian").tag("uk")
-                    Text("Spanish").tag("es")
-                    Text("French").tag("fr")
-                    Text("German").tag("de")
-                    Text("Italian").tag("it")
-                    Text("Portuguese").tag("pt")
-                    Text("Chinese").tag("zh")
-                    Text("Japanese").tag("ja")
-                    Text("Korean").tag("ko")
-                    Text("Auto-detect").tag("")
-                }
-            }
+                Divider()
 
-            Section(header: Text("Hotkey").font(.headline)) {
-                VStack(alignment: .leading, spacing: 10) {
+                // Hotkey Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Hotkey")
+                        .font(.headline)
+                        .padding(.bottom, 4)
+
                     Text("Current Hotkey:")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
                     Text("⌥ Option + Space")
                         .font(.system(.body, design: .monospaced))
-                        .padding(8)
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.secondary.opacity(0.1))
-                        .cornerRadius(4)
+                        .cornerRadius(6)
 
                     Text("Hotkey customization coming soon")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-            }
 
-            Section(header: Text("Permissions").font(.headline)) {
-                VStack(alignment: .leading, spacing: 10) {
+                Divider()
+
+                // Permissions Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Permissions")
+                        .font(.headline)
+                        .padding(.bottom, 4)
+
                     PermissionRow(
                         title: "Microphone",
                         icon: "mic.fill",
                         isGranted: checkMicrophonePermission()
                     )
+                    .padding(.vertical, 4)
 
                     PermissionRow(
                         title: "Accessibility",
                         icon: "accessibility",
                         isGranted: checkAccessibilityPermission()
                     )
+                    .padding(.vertical, 4)
 
                     Button("Open System Settings") {
                         openSystemSettings()
                     }
+                    .padding(.top, 4)
                 }
-            }
 
-            Section(header: Text("About").font(.headline)) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("WhisperType")
+                Divider()
+
+                // About Section
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("About")
                         .font(.headline)
+                        .padding(.bottom, 4)
+
+                    Text("WhisperType")
+                        .font(.title3)
+                        .fontWeight(.semibold)
                     Text("Version 1.0")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -149,21 +188,8 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 }
             }
-
-            Section(header: Text("About").font(.headline)) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("WhisperType")
-                        .font(.headline)
-                    Text("Version 1.0")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Text("Powered by WhisperKit")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
+            .padding(20)
         }
-        .padding()
     }
 
     private func checkMicrophonePermission() -> Bool {
