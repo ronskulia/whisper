@@ -20,7 +20,13 @@ class TextInserter {
         let hasActiveWindow = checkForActiveWindow()
 
         let pasteboard = NSPasteboard.general
-        let previousContents = pasteboard.pasteboardItems
+
+        // Save the ACTUAL DATA from clipboard (not just references to items)
+        // NSPasteboardItem references become invalid after clearContents()
+        var previousString: String? = nil
+        if let str = pasteboard.string(forType: .string) {
+            previousString = str
+        }
 
         // Set text to clipboard
         pasteboard.clearContents()
@@ -36,8 +42,8 @@ class TextInserter {
             // Normal case: restore previous clipboard after paste
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 pasteboard.clearContents()
-                if let items = previousContents {
-                    pasteboard.writeObjects(items)
+                if let str = previousString {
+                    pasteboard.setString(str, forType: .string)
                 }
             }
             print("Text pasted to active window, clipboard restored")
