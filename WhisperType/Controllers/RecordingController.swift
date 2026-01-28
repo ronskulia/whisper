@@ -181,6 +181,22 @@ class RecordingController: ObservableObject {
         }
     }
 
+    func cancelRecording() {
+        Task {
+            guard state.isRecording else { return }
+
+            // Stop recording without transcribing
+            _ = await audioRecorder.stopRecording()
+
+            await MainActor.run {
+                state = .idle
+                overlayWindow?.hide()
+            }
+
+            print("Recording cancelled")
+        }
+    }
+
     func cleanup() {
         audioRecorder.cleanup()
         whisperEngine.unloadModel()

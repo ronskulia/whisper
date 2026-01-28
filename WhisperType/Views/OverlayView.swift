@@ -8,6 +8,7 @@ import SwiftUI
 struct OverlayView: View {
     var message: String = "Recording..."
     weak var recordingController: RecordingController?
+    var onCancel: (() -> Void)?
 
     @State private var waveHeights: [CGFloat] = Array(repeating: 0.3, count: 8)
     @State private var timer: Timer?
@@ -37,6 +38,19 @@ struct OverlayView: View {
                 Text(message)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.white)
+            }
+
+            // Cancel button (only show while recording)
+            if message == "Recording..." {
+                Button(action: {
+                    onCancel?()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 16))
+                        .foregroundColor(.red.opacity(0.9))
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 4)
             }
         }
         .padding(.horizontal, 16)

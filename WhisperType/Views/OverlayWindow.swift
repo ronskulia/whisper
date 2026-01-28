@@ -14,7 +14,7 @@ class OverlayWindow: NSWindow {
         self.recordingController = recordingController
         // Create window with no title bar, always on top
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 220, height: 50),
+            contentRect: NSRect(x: 0, y: 0, width: 250, height: 50),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -29,7 +29,12 @@ class OverlayWindow: NSWindow {
         self.hasShadow = true
 
         // Create and set the SwiftUI view
-        let overlayView = OverlayView(recordingController: recordingController)
+        let overlayView = OverlayView(
+            recordingController: recordingController,
+            onCancel: { [weak self] in
+                self?.recordingController?.cancelRecording()
+            }
+        )
         hostingView = NSHostingView(rootView: overlayView)
         hostingView?.frame = self.contentView?.bounds ?? .zero
         hostingView?.autoresizingMask = [.width, .height]
@@ -55,7 +60,13 @@ class OverlayWindow: NSWindow {
 
     func updateMessage(_ message: String) {
         if let hostingView = hostingView {
-            hostingView.rootView = OverlayView(message: message, recordingController: recordingController)
+            hostingView.rootView = OverlayView(
+                message: message,
+                recordingController: recordingController,
+                onCancel: { [weak self] in
+                    self?.recordingController?.cancelRecording()
+                }
+            )
         }
     }
 
