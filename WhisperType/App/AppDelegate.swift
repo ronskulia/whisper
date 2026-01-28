@@ -16,16 +16,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Hide dock icon - menu bar only
         NSApp.setActivationPolicy(.accessory)
 
-        // Initialize controllers
-        recordingController = RecordingController()
-        menuBarController = MenuBarController(recordingController: recordingController!)
-        overlayWindow = OverlayWindow(recordingController: recordingController)
+        // Initialize controllers (with safe unwrapping)
+        let recording = RecordingController()
+        recordingController = recording
+        menuBarController = MenuBarController(recordingController: recording)
+        overlayWindow = OverlayWindow(recordingController: recording)
 
         // Set up overlay window callback
-        recordingController?.overlayWindow = overlayWindow
+        recording.overlayWindow = overlayWindow
 
         // Set up model loaded callback
-        recordingController?.onModelLoaded = { [weak self] in
+        recording.onModelLoaded = { [weak self] in
             self?.menuBarController?.setModelLoaded()
         }
 
@@ -37,24 +38,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Load Whisper model in background
         Task {
-            await recordingController?.loadWhisperModel()
+            await recording.loadWhisperModel()
         }
 
-        // Close any default windows and open settings on launch
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // Close any empty windows that SwiftUI created (but not our overlay)
-            for window in NSApp.windows {
-                // Skip our overlay window
-                if window === self.overlayWindow {
-                    continue
-                }
-                // Close empty SwiftUI-created windows
-                if window.contentView?.subviews.isEmpty == true {
-                    window.close()
-                }
-            }
-            // Open our settings window
-            self.menuBarController?.openSettings()
+        // Open settings on launch (small delay to ensure everything is ready)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.menuBarController?.openSettings()
         }
 
         print("WhisperType started successfully")

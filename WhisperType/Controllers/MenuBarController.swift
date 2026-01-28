@@ -123,6 +123,9 @@ class MenuBarController: NSObject {
             settingsWindow?.styleMask = [.titled, .closable]
             settingsWindow?.setContentSize(NSSize(width: 550, height: 480))
             settingsWindow?.center()
+            // IMPORTANT: Prevent window from being released when closed
+            // This prevents crashes when reopening settings
+            settingsWindow?.isReleasedWhenClosed = false
         }
 
         settingsWindow?.makeKeyAndOrderFront(nil)
