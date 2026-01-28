@@ -7,16 +7,22 @@ import AppKit
 import CoreGraphics
 
 class TextInserter {
-    func pasteText(_ text: String) {
+    // Returns true if text was kept in clipboard (no active window), false if pasted normally
+    func pasteText(_ text: String) -> Bool {
         guard !text.isEmpty else {
             print("Empty text, skipping paste")
-            return
+            return false
         }
 
         print("Pasting text: \(text)")
 
-        // Set text to clipboard
+        // Check if there's an active window to paste into
+        let hasActiveWindow = checkForActiveWindow()
+
         let pasteboard = NSPasteboard.general
+        let previousContents = pasteboard.pasteboardItems
+
+        // Set text to clipboard
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
 
@@ -26,8 +32,34 @@ class TextInserter {
         // Simulate Cmd+V
         simulateCmdV()
 
-        // Keep text in clipboard for manual pasting if auto-paste fails
-        print("Text pasted successfully and kept in clipboard")
+        if hasActiveWindow {
+            // Normal case: restore previous clipboard after paste
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                pasteboard.clearContents()
+                if let items = previousContents {
+                    pasteboard.writeObjects(items)
+                }
+            }
+            print("Text pasted to active window, clipboard restored")
+            return false
+        } else {
+            // No active window: keep text in clipboard for manual paste
+            print("No active window, text kept in clipboard")
+            return true
+        }
+    }
+
+    private func checkForActiveWindow() -> Bool {
+        // Check if there's a frontmost application that can receive input
+        guard let frontApp = NSWorkspace.shared.frontmostApplication else {
+            return false
+        }
+
+        // Exclude our own app and system apps that don't accept text input
+        let bundleId = frontApp.bundleIdentifier ?? ""
+        let excludedApps = ["com.apple.finder", "com.apple.dock"]
+
+        return !excludedApps.contains(bundleId) && bundleId != Bundle.main.bundleIdentifier
     }
 
     private func simulateCmdV() {

@@ -137,21 +137,23 @@ class RecordingController: ObservableObject {
                 // Track stats
                 Settings.shared.addRecording(text: transcription, durationSeconds: duration)
 
-                // Show "Saved" message briefly
-                await MainActor.run {
-                    overlayWindow?.updateMessage("Saved - Press ⌘V to paste")
-                }
+                // Paste the text and check if it was kept in clipboard
+                let keptInClipboard = textInserter.pasteText(transcription)
 
-                // Keep message visible for 1.5 seconds
-                try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5s
+                if keptInClipboard {
+                    // No active window: show message
+                    await MainActor.run {
+                        overlayWindow?.updateMessage("Saved - Press ⌘V to paste")
+                    }
+
+                    // Keep message visible for 1.5 seconds
+                    try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5s
+                }
 
                 await MainActor.run {
                     state = .idle
                     overlayWindow?.hide()
                 }
-
-                // Paste the text
-                textInserter.pasteText(transcription)
             } else {
                 await MainActor.run {
                     state = .idle
