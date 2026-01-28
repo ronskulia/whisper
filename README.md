@@ -1,3 +1,5 @@
+I didnt want to pay for superwhisper, so just asked claude to create me my own version
+
 # WhisperType
 
 A macOS menu bar app for speech-to-text transcription using WhisperKit. Record audio with a global hotkey and automatically paste transcribed text anywhere.
