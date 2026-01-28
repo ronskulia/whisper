@@ -24,6 +24,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Set up overlay window callback
         recordingController?.overlayWindow = overlayWindow
 
+        // Set up model loaded callback
+        recordingController?.onModelLoaded = { [weak self] in
+            self?.menuBarController?.setModelLoaded()
+        }
+
         // Set up hotkey
         hotkeyManager = HotkeyManager()
         hotkeyManager?.registerHotkey { [weak self] in
@@ -61,5 +66,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
         return true
+    }
+
+    // IMPORTANT: Prevent app from quitting when windows are closed
+    // This is essential for menu bar apps
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return false
     }
 }

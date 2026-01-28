@@ -10,6 +10,7 @@ class MenuBarController: NSObject {
     private var statusItem: NSStatusItem?
     private var recordingController: RecordingController
     private var settingsWindow: NSWindow?
+    private var isModelLoading = true
 
     init(recordingController: RecordingController) {
         self.recordingController = recordingController
@@ -20,13 +21,30 @@ class MenuBarController: NSObject {
     private func setupMenuBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
+        // Start with loading indicator
+        updateMenuBarIcon(loading: true)
+        setupMenu()
+    }
+
+    private func updateMenuBarIcon(loading: Bool) {
+        isModelLoading = loading
         if let button = statusItem?.button {
-            // Use microphone symbol
-            button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "WhisperType")
+            if loading {
+                // Show loading icon (mic with badge)
+                button.image = NSImage(systemSymbolName: "mic.badge.ellipsis", accessibilityDescription: "WhisperType - Loading")
+            } else {
+                // Show ready icon
+                button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "WhisperType - Ready")
+            }
             button.image?.isTemplate = true
         }
+        updateMenu()
+    }
 
-        setupMenu()
+    func setModelLoaded() {
+        DispatchQueue.main.async {
+            self.updateMenuBarIcon(loading: false)
+        }
     }
 
     private func setupMenu() {
@@ -69,7 +87,11 @@ class MenuBarController: NSObject {
 
         // Update status item
         if let statusItem = menu.items.first {
-            statusItem.title = recordingController.state.displayMessage
+            if isModelLoading {
+                statusItem.title = "Loading model..."
+            } else {
+                statusItem.title = recordingController.state.displayMessage
+            }
         }
 
         // Update record item
@@ -79,7 +101,8 @@ class MenuBarController: NSObject {
             } else {
                 recordItem.title = "Start Recording"
             }
-            recordItem.isEnabled = !recordingController.state.isProcessing
+            // Disable recording while model is loading or processing
+            recordItem.isEnabled = !isModelLoading && !recordingController.state.isProcessing
         }
     }
 

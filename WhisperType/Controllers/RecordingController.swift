@@ -16,6 +16,7 @@ class RecordingController: ObservableObject {
     private let textInserter = TextInserter()
 
     var overlayWindow: OverlayWindow?
+    var onModelLoaded: (() -> Void)?
 
     private var cancellables = Set<AnyCancellable>()
     private var recordingStartTime: Date?
@@ -45,6 +46,9 @@ class RecordingController: ObservableObject {
     func loadWhisperModel() async {
         do {
             try await whisperEngine.loadModel(modelName: Settings.shared.modelName)
+            await MainActor.run {
+                onModelLoaded?()
+            }
         } catch {
             print("Failed to load Whisper model: \(error)")
             await MainActor.run {
