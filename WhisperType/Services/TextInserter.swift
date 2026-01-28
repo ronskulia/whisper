@@ -7,7 +7,7 @@ import AppKit
 import CoreGraphics
 
 class TextInserter {
-    // Returns true if text was kept in clipboard (no active window), false if pasted normally
+    // Returns true if should show "Saved to clipboard" message (on desktop/Finder)
     func pasteText(_ text: String) -> Bool {
         guard !text.isEmpty else {
             print("Empty text, skipping paste")
@@ -16,17 +16,7 @@ class TextInserter {
 
         print("Pasting text: \(text)")
 
-        // Check if there's an active window to paste into
-        let hasActiveWindow = checkForActiveWindow()
-
         let pasteboard = NSPasteboard.general
-
-        // Save the ACTUAL DATA from clipboard (not just references to items)
-        // NSPasteboardItem references become invalid after clearContents()
-        var previousString: String? = nil
-        if let str = pasteboard.string(forType: .string) {
-            previousString = str
-        }
 
         // Set text to clipboard
         pasteboard.clearContents()
@@ -35,37 +25,30 @@ class TextInserter {
         // Small delay to ensure clipboard is updated
         usleep(50000) // 50ms
 
-        // Simulate Cmd+V
+        // Simulate Cmd+V (will work if cursor is in a text field, otherwise no-op)
         simulateCmdV()
 
-        if hasActiveWindow {
-            // Normal case: restore previous clipboard after paste
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                pasteboard.clearContents()
-                if let str = previousString {
-                    pasteboard.setString(str, forType: .string)
-                }
-            }
-            print("Text pasted to active window, clipboard restored")
-            return false
+        // Text ALWAYS stays in clipboard - user can manually Cmd+V if auto-paste didn't work
+        // Only show "Saved" message if on desktop (Finder) since paste definitely won't work there
+        let showMessage = isOnDesktop()
+
+        if showMessage {
+            print("On desktop, text kept in clipboard")
         } else {
-            // No active window: keep text in clipboard for manual paste
-            print("No active window, text kept in clipboard")
-            return true
+            print("Attempted paste, text kept in clipboard as backup")
         }
+
+        return showMessage
     }
 
-    private func checkForActiveWindow() -> Bool {
-        // Check if there's a frontmost application that can receive input
+    private func isOnDesktop() -> Bool {
+        // Check if Finder is frontmost (user is on desktop or in Finder)
         guard let frontApp = NSWorkspace.shared.frontmostApplication else {
-            return false
+            return true // No app = probably desktop
         }
 
-        // Exclude our own app and system apps that don't accept text input
         let bundleId = frontApp.bundleIdentifier ?? ""
-        let excludedApps = ["com.apple.finder", "com.apple.dock"]
-
-        return !excludedApps.contains(bundleId) && bundleId != Bundle.main.bundleIdentifier
+        return bundleId == "com.apple.finder" || bundleId == "com.apple.dock"
     }
 
     private func simulateCmdV() {
