@@ -52,6 +52,41 @@ struct SettingsView: View {
                 }
             }
 
+            Section(header: Text("Speech Statistics").font(.headline)) {
+                VStack(alignment: .leading, spacing: 12) {
+                    StatRow(
+                        label: "Average Speaking Speed",
+                        value: String(format: "%.0f words/min", settings.speechStats.averageWPM),
+                        icon: "speedometer"
+                    )
+
+                    StatRow(
+                        label: "Total Recordings",
+                        value: "\(settings.speechStats.totalRecordings)",
+                        icon: "waveform.circle"
+                    )
+
+                    StatRow(
+                        label: "Total Words Transcribed",
+                        value: "\(settings.speechStats.totalWords)",
+                        icon: "text.bubble"
+                    )
+
+                    StatRow(
+                        label: "Total Recording Time",
+                        value: settings.speechStats.totalDurationFormatted,
+                        icon: "clock"
+                    )
+
+                    if settings.speechStats.totalRecordings == 0 {
+                        Text("Start recording to see your stats!")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                    }
+                }
+            }
+
             Section(header: Text("Permissions").font(.headline)) {
                 VStack(alignment: .leading, spacing: 10) {
                     PermissionRow(
@@ -111,6 +146,28 @@ struct SettingsView: View {
     private func openSystemSettings() {
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy")!
         NSWorkspace.shared.open(url)
+    }
+}
+
+struct StatRow: View {
+    let label: String
+    let value: String
+    let icon: String
+
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text(value)
+                    .font(.system(.body, weight: .semibold))
+            }
+            Spacer()
+        }
     }
 }
 

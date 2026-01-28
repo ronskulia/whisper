@@ -12,7 +12,7 @@ class OverlayWindow: NSWindow {
     init() {
         // Create window with no title bar, always on top
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
+            contentRect: NSRect(x: 0, y: 0, width: 220, height: 50),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -62,7 +62,8 @@ class OverlayWindow: NSWindow {
             let screenFrame = screen.frame
             let windowFrame = self.frame
             let x = screenFrame.midX - windowFrame.width / 2
-            let y = screenFrame.midY - windowFrame.height / 2
+            // Position at top of screen with small margin
+            let y = screenFrame.maxY - windowFrame.height - 40
             self.setFrameOrigin(NSPoint(x: x, y: y))
         }
     }

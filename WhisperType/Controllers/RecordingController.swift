@@ -17,6 +17,7 @@ class RecordingController: ObservableObject {
     var overlayWindow: OverlayWindow?
 
     private var cancellables = Set<AnyCancellable>()
+    private var recordingStartTime: Date?
 
     init() {
         setupSubscriptions()
@@ -72,6 +73,7 @@ class RecordingController: ObservableObject {
             await MainActor.run {
                 state = .recording
                 overlayWindow?.show(message: "Recording...")
+                recordingStartTime = Date()
             }
 
             try await audioRecorder.startRecording()
@@ -126,6 +128,12 @@ class RecordingController: ObservableObject {
 
             // Insert text if not empty
             if !transcription.isEmpty {
+                // Calculate recording duration
+                let duration = recordingStartTime.map { Date().timeIntervalSince($0) } ?? 0
+
+                // Track stats
+                Settings.shared.addRecording(text: transcription, durationSeconds: duration)
+
                 // Small delay to allow overlay to disappear
                 try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
 
