@@ -129,11 +129,6 @@ class RecordingController: ObservableObject {
                 language: Settings.shared.language
             )
 
-            await MainActor.run {
-                state = .idle
-                overlayWindow?.hide()
-            }
-
             // Insert text if not empty
             if !transcription.isEmpty {
                 // Calculate recording duration
@@ -142,11 +137,26 @@ class RecordingController: ObservableObject {
                 // Track stats
                 Settings.shared.addRecording(text: transcription, durationSeconds: duration)
 
-                // Small delay to allow overlay to disappear
-                try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+                // Show "Saved" message briefly
+                await MainActor.run {
+                    overlayWindow?.updateMessage("Saved - Press ⌘V to paste")
+                }
 
+                // Keep message visible for 1.5 seconds
+                try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5s
+
+                await MainActor.run {
+                    state = .idle
+                    overlayWindow?.hide()
+                }
+
+                // Paste the text
                 textInserter.pasteText(transcription)
             } else {
+                await MainActor.run {
+                    state = .idle
+                    overlayWindow?.hide()
+                }
                 showErrorAlert("No speech detected. Please try again.")
             }
         } catch {

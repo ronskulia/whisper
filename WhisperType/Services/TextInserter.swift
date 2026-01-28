@@ -15,11 +15,8 @@ class TextInserter {
 
         print("Pasting text: \(text)")
 
-        // Save current clipboard contents
+        // Set text to clipboard
         let pasteboard = NSPasteboard.general
-        let previousContents = pasteboard.pasteboardItems
-
-        // Set new text to clipboard
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
 
@@ -29,15 +26,8 @@ class TextInserter {
         // Simulate Cmd+V
         simulateCmdV()
 
-        // Restore previous clipboard after a delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            pasteboard.clearContents()
-            if let items = previousContents {
-                pasteboard.writeObjects(items)
-            }
-        }
-
-        print("Text pasted successfully")
+        // Keep text in clipboard for manual pasting if auto-paste fails
+        print("Text pasted successfully and kept in clipboard")
     }
 
     private func simulateCmdV() {
