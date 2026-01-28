@@ -68,35 +68,23 @@ struct OverlayView: View {
     }
 
     private func startWaveAnimation() {
-        // Invalidate any existing timer first
-        timer?.invalidate()
-        timer = nil
-
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak recordingController] _ in
-            // Safety check - make sure we can access the recording controller
-            guard let controller = recordingController else {
-                return
-            }
-
-            let level = controller.currentAudioLevel
+            guard let level = recordingController?.currentAudioLevel else { return }
 
             // Much lower threshold for better sensitivity to quiet speech
             let silenceThreshold: Float = 0.002
 
-            // Update wave heights on main thread
-            DispatchQueue.main.async { [self] in
-                if level < silenceThreshold {
-                    // Freeze at low level when silent
-                    for i in 0..<waveHeights.count {
-                        waveHeights[i] = 0.3
-                    }
-                } else {
-                    // Amplify the audio level more for better visibility
-                    let normalizedLevel = min(CGFloat(level * 50), 1.0)
-                    for i in 0..<waveHeights.count {
-                        let variation = CGFloat.random(in: -0.15...0.15)
-                        waveHeights[i] = max(0.4, min(1.0, normalizedLevel + variation))
-                    }
+            if level < silenceThreshold {
+                // Freeze at low level when silent
+                for i in 0..<waveHeights.count {
+                    waveHeights[i] = 0.3
+                }
+            } else {
+                // Amplify the audio level more for better visibility
+                let normalizedLevel = min(CGFloat(level * 50), 1.0)
+                for i in 0..<waveHeights.count {
+                    let variation = CGFloat.random(in: -0.15...0.15)
+                    waveHeights[i] = max(0.4, min(1.0, normalizedLevel + variation))
                 }
             }
         }
