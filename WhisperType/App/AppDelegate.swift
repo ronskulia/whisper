@@ -37,9 +37,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Close any default windows and open settings on launch
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // Close any empty windows that SwiftUI created
-            for window in NSApp.windows where window.title.isEmpty || window.contentView?.subviews.isEmpty == true {
-                window.close()
+            // Close any empty windows that SwiftUI created (but not our overlay)
+            for window in NSApp.windows {
+                // Skip our overlay window
+                if window === self.overlayWindow {
+                    continue
+                }
+                // Close empty SwiftUI-created windows
+                if window.contentView?.subviews.isEmpty == true {
+                    window.close()
+                }
             }
             // Open our settings window
             self.menuBarController?.openSettings()
