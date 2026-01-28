@@ -6,18 +6,22 @@ WhisperType is a macOS menu bar app that lets you dictate text anywhere using a 
 
 ## Installation & First Run
 
-1. **Build the app:**
+1. **Clone and open:**
    ```bash
-   cd WhisperType
-   ./run.sh
+   git clone https://github.com/ronskulia/whisper.git
+   cd whisper
+   open WhisperType.xcodeproj
    ```
-   Or open `WhisperType.xcodeproj` in Xcode and press Cmd+R.
 
-2. **Grant permissions:**
+2. **Build in Xcode** (press Cmd+R)
+   - Xcode automatically downloads dependencies
+   - First build takes 2-3 minutes
+
+3. **Grant permissions:**
    - **Microphone**: Required for recording. Click "OK" when prompted.
    - **Accessibility**: Required for hotkey and paste. Click "Open System Settings" and enable WhisperType.
 
-3. **Wait for model download:**
+4. **Wait for model download:**
    - First launch downloads the Whisper model (~39MB)
    - Takes 30-60 seconds depending on connection
    - You'll see "Model loaded" when ready

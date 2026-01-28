@@ -16,10 +16,22 @@ A macOS menu bar app for speech-to-text transcription using WhisperKit. Record a
 - macOS 13.0 or later
 - Apple Silicon (M1/M2/M3) or Intel Mac
 
-## Building
+## Quick Start
 
-1. Open `WhisperType.xcodeproj` in Xcode
-2. Build and run (Cmd+R)
+1. **Clone the repository:**
+```bash
+git clone https://github.com/ronskulia/whisper.git
+cd whisper
+```
+
+2. **Open in Xcode:**
+```bash
+open WhisperType.xcodeproj
+```
+
+3. **Build and run** (Cmd+R)
+   - Xcode will automatically download WhisperKit and dependencies
+   - First build takes 2-3 minutes
 
 Or build from command line:
 ```bash
@@ -74,7 +86,7 @@ WhisperType/
 
 ## Dependencies
 
-- **WhisperKit** - Local WhisperKit Swift package at `../WhisperKit`
+- **WhisperKit** - https://github.com/argmaxinc/whisperkit (automatically downloaded by Xcode)
 - **HotKey** - https://github.com/soffes/HotKey (for global hotkeys)
 
 ## Technical Details

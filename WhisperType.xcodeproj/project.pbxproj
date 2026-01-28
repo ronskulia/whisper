@@ -197,7 +197,7 @@
 			);
 			mainGroup = A0000038000000000000001;
 			packageReferences = (
-				A0000053000000000000001 /* XCLocalSwiftPackageReference "../WhisperKit" */,
+				A0000053000000000000001 /* XCRemoteSwiftPackageReference "whisperkit" */,
 				A0000054000000000000001 /* XCRemoteSwiftPackageReference "HotKey" */,
 			);
 			productRefGroup = A0000040000000000000001 /* Products */;
@@ -440,14 +440,15 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		A0000053000000000000001 /* XCLocalSwiftPackageReference "../WhisperKit" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../WhisperKit;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
+		A0000053000000000000001 /* XCRemoteSwiftPackageReference "whisperkit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/whisperkit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
 		A0000054000000000000001 /* XCRemoteSwiftPackageReference "HotKey" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/soffes/HotKey";
@@ -461,7 +462,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		A0000032000000000000001 /* WhisperKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A0000053000000000000001 /* XCLocalSwiftPackageReference "../WhisperKit" */;
+			package = A0000053000000000000001 /* XCRemoteSwiftPackageReference "whisperkit" */;
 			productName = WhisperKit;
 		};
 		A0000034000000000000001 /* HotKey */ = {
