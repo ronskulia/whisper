@@ -68,7 +68,7 @@ class Settings: ObservableObject {
 
     @Published var hotkeyKeyCode: UInt32 = UInt32(kVK_Space)
     @Published var hotkeyModifiers: UInt32 = UInt32(cmdKey | shiftKey)
-    @Published var modelName: String = "openai_whisper-base"
+    @Published var modelName: String = "openai_whisper-small"
     @Published var language: String = "en"
     @Published var speechStats: SpeechStats = SpeechStats()
 

@@ -19,7 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Initialize controllers
         recordingController = RecordingController()
         menuBarController = MenuBarController(recordingController: recordingController!)
-        overlayWindow = OverlayWindow()
+        overlayWindow = OverlayWindow(recordingController: recordingController)
 
         // Set up overlay window callback
         recordingController?.overlayWindow = overlayWindow

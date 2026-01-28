@@ -10,6 +10,7 @@ import WhisperKit
 class AudioRecorder: ObservableObject {
     private var audioProcessor: AudioProcessor?
     @Published var isRecording = false
+    @Published var currentAudioLevel: Float = 0.0
     private var audioBuffer: [Float] = []
 
     init() {
@@ -30,6 +31,16 @@ class AudioRecorder: ObservableObject {
             guard let self = self else { return }
             // Append to buffer
             self.audioBuffer.append(contentsOf: buffer)
+
+            // Calculate RMS (root mean square) for audio level
+            if !buffer.isEmpty {
+                let sumOfSquares = buffer.map { $0 * $0 }.reduce(0, +)
+                let rms = sqrt(sumOfSquares / Float(buffer.count))
+
+                Task { @MainActor in
+                    self.currentAudioLevel = rms
+                }
+            }
         }
 
         await MainActor.run {

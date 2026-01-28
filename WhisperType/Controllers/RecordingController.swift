@@ -9,6 +9,7 @@ import Combine
 
 class RecordingController: ObservableObject {
     @Published var state: RecordingState = .idle
+    @Published var currentAudioLevel: Float = 0.0
 
     private let audioRecorder = AudioRecorder()
     private let whisperEngine = WhisperEngine()
@@ -30,6 +31,13 @@ class RecordingController: ObservableObject {
                 if isLoaded {
                     print("Model loaded and ready")
                 }
+            }
+            .store(in: &cancellables)
+
+        // Forward audio level to overlay
+        audioRecorder.$currentAudioLevel
+            .sink { [weak self] level in
+                self?.currentAudioLevel = level
             }
             .store(in: &cancellables)
     }

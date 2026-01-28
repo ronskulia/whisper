@@ -11,6 +11,71 @@ struct SettingsView: View {
     @ObservedObject private var settings = Settings.shared
 
     var body: some View {
+        TabView {
+            // Stats Tab
+            statsTab
+                .tabItem {
+                    Label("Stats", systemImage: "chart.bar.fill")
+                }
+
+            // Settings Tab
+            settingsTab
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
+        }
+        .frame(width: 550, height: 450)
+        .onDisappear {
+            settings.saveSettings()
+        }
+    }
+
+    var statsTab: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Speech Statistics")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.bottom, 10)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    StatRow(
+                        label: "Average Speaking Speed",
+                        value: String(format: "%.0f words/min", settings.speechStats.averageWPM),
+                        icon: "speedometer"
+                    )
+
+                    StatRow(
+                        label: "Total Recordings",
+                        value: "\(settings.speechStats.totalRecordings)",
+                        icon: "waveform.circle"
+                    )
+
+                    StatRow(
+                        label: "Total Words Transcribed",
+                        value: "\(settings.speechStats.totalWords)",
+                        icon: "text.bubble"
+                    )
+
+                    StatRow(
+                        label: "Total Recording Time",
+                        value: settings.speechStats.totalDurationFormatted,
+                        icon: "clock"
+                    )
+
+                    if settings.speechStats.totalRecordings == 0 {
+                        Text("Start recording to see your stats!")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 8)
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+
+    var settingsTab: some View {
         Form {
             Section(header: Text("General").font(.headline)) {
                 Picker("Whisper Model", selection: $settings.modelName) {
@@ -52,41 +117,6 @@ struct SettingsView: View {
                 }
             }
 
-            Section(header: Text("Speech Statistics").font(.headline)) {
-                VStack(alignment: .leading, spacing: 12) {
-                    StatRow(
-                        label: "Average Speaking Speed",
-                        value: String(format: "%.0f words/min", settings.speechStats.averageWPM),
-                        icon: "speedometer"
-                    )
-
-                    StatRow(
-                        label: "Total Recordings",
-                        value: "\(settings.speechStats.totalRecordings)",
-                        icon: "waveform.circle"
-                    )
-
-                    StatRow(
-                        label: "Total Words Transcribed",
-                        value: "\(settings.speechStats.totalWords)",
-                        icon: "text.bubble"
-                    )
-
-                    StatRow(
-                        label: "Total Recording Time",
-                        value: settings.speechStats.totalDurationFormatted,
-                        icon: "clock"
-                    )
-
-                    if settings.speechStats.totalRecordings == 0 {
-                        Text("Start recording to see your stats!")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 4)
-                    }
-                }
-            }
-
             Section(header: Text("Permissions").font(.headline)) {
                 VStack(alignment: .leading, spacing: 10) {
                     PermissionRow(
@@ -119,12 +149,21 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 }
             }
+
+            Section(header: Text("About").font(.headline)) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("WhisperType")
+                        .font(.headline)
+                    Text("Version 1.0")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text("Powered by WhisperKit")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
         }
         .padding()
-        .frame(width: 500, height: 500)
-        .onDisappear {
-            settings.saveSettings()
-        }
     }
 
     private func checkMicrophonePermission() -> Bool {

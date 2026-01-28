@@ -7,6 +7,7 @@ import SwiftUI
 
 struct OverlayView: View {
     var message: String = "Recording..."
+    weak var recordingController: RecordingController?
 
     @State private var waveHeights: [CGFloat] = Array(repeating: 0.3, count: 8)
     @State private var timer: Timer?
@@ -53,9 +54,24 @@ struct OverlayView: View {
     }
 
     private func startWaveAnimation() {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
-            for i in 0..<waveHeights.count {
-                waveHeights[i] = CGFloat.random(in: 0.3...1.0)
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak recordingController] _ in
+            guard let level = recordingController?.currentAudioLevel else { return }
+
+            // Threshold for silence (adjust sensitivity here)
+            let silenceThreshold: Float = 0.01
+
+            if level < silenceThreshold {
+                // Freeze at low level when silent
+                for i in 0..<waveHeights.count {
+                    waveHeights[i] = 0.3
+                }
+            } else {
+                // Animate based on audio level when speaking
+                let normalizedLevel = min(CGFloat(level * 10), 1.0) // Scale up the level
+                for i in 0..<waveHeights.count {
+                    let variation = CGFloat.random(in: -0.2...0.2)
+                    waveHeights[i] = max(0.3, min(1.0, normalizedLevel + variation))
+                }
             }
         }
     }
