@@ -23,6 +23,12 @@ class AudioRecorder: ObservableObject {
             throw RecordingError.noPermission
         }
 
+        // Set selected microphone if specified
+        let selectedMic = Settings.shared.selectedMicrophoneUID
+        if !selectedMic.isEmpty {
+            Settings.shared.setDefaultInputDevice(uid: selectedMic)
+        }
+
         // Clear previous buffer
         audioBuffer = []
 

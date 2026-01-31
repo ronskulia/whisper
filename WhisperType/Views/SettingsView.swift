@@ -9,6 +9,7 @@ import ApplicationServices
 
 struct SettingsView: View {
     @ObservedObject private var settings = Settings.shared
+    @State private var availableMicrophones: [AudioDevice] = []
 
     var body: some View {
         TabView {
@@ -115,6 +116,30 @@ struct SettingsView: View {
                         }
                         .pickerStyle(.menu)
                     }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Microphone")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Picker("", selection: $settings.selectedMicrophoneUID) {
+                            Text("System Default").tag("")
+                            ForEach(availableMicrophones) { device in
+                                Text(device.name).tag(device.uid)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .onChange(of: settings.selectedMicrophoneUID) { newValue in
+                            if !newValue.isEmpty {
+                                settings.setDefaultInputDevice(uid: newValue)
+                            }
+                            settings.saveSettings()
+                        }
+
+                        Button("Refresh Microphones") {
+                            availableMicrophones = settings.getAvailableInputDevices()
+                        }
+                        .font(.caption)
+                    }
                 }
 
                 Divider()
@@ -189,6 +214,9 @@ struct SettingsView: View {
                 }
             }
             .padding(20)
+        }
+        .onAppear {
+            availableMicrophones = settings.getAvailableInputDevices()
         }
     }
 
