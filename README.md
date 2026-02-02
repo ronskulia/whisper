@@ -24,31 +24,7 @@ A macOS menu bar app for speech-to-text transcription using WhisperKit. Record a
 
 ## Installation
 
-### Option 1: Using Xcode (Recommended)
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/ronskulia/whisper.git
-cd whisper/WhisperType
-```
-
-2. **Open in Xcode:**
-```bash
-open WhisperType.xcodeproj
-```
-
-3. **Build the app:**
-   - Press `Cmd+B` to build (or `Cmd+R` to build and run)
-   - Xcode will automatically download WhisperKit and dependencies
-   - First build takes 2-3 minutes
-
-4. **Install to Applications:**
-   - In Xcode, go to **Product → Show Build Folder in Finder**
-   - Navigate to `Products/Release/` (or `Products/Debug/`)
-   - Drag `WhisperType.app` to your `/Applications` folder
-   - Or copy from: `~/Library/Developer/Xcode/DerivedData/WhisperType-[random]/Build/Products/Release/WhisperType.app`
-
-### Option 2: Command Line
+### Quick Install (Command Line)
 
 1. **Clone and build:**
 ```bash
@@ -57,22 +33,31 @@ cd whisper/WhisperType
 xcodebuild -scheme WhisperType -configuration Release build
 ```
 
-2. **Find the built app:**
+2. **Copy to Applications:**
 ```bash
-# The app is built to DerivedData. Find it with:
-find ~/Library/Developer/Xcode/DerivedData -name "WhisperType.app" -path "*/Release/*" 2>/dev/null
-```
-
-3. **Copy to Applications:**
-```bash
-# Replace the path with the actual path from the previous command
 cp -r ~/Library/Developer/Xcode/DerivedData/WhisperType-*/Build/Products/Release/WhisperType.app /Applications/
 ```
 
-4. **Launch:**
+3. **Launch:**
 ```bash
 open /Applications/WhisperType.app
 ```
+
+### Alternative: Using Xcode
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/ronskulia/whisper.git
+cd whisper/WhisperType
+open WhisperType.xcodeproj
+```
+
+2. **Build the app:** Press `Cmd+B` (first build takes 2-3 minutes to download dependencies)
+
+3. **Install to Applications:**
+   - Go to **Product → Show Build Folder in Finder**
+   - Navigate to `Products/Release/`
+   - Drag `WhisperType.app` to your `/Applications` folder
 
 ## First Run
 
